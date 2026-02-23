@@ -5,6 +5,7 @@ const { getDb } = require('./src/db');
 const { setupWebSocket } = require('./src/ws/handler');
 const roomsRouter = require('./src/routes/rooms');
 const historyRouter = require('./src/routes/history');
+const jiraRouter = require('./src/routes/jira');
 
 const PORT = process.env.PORT || 3000;
 
@@ -14,6 +15,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/rooms', roomsRouter);
 app.use('/api/rooms', historyRouter);
+app.use('/api/jira', jiraRouter);
 
 const server = http.createServer(app);
 

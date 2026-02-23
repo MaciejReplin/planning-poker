@@ -367,6 +367,53 @@ th {
 /* Hidden */
 .hidden { display: none !important; }
 
+/* Dashboard */
+.tab-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tab-btn {
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.15s;
+}
+
+.tab-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.status-banner {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.status-banner.ok {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid var(--success);
+  color: var(--success);
+}
+
+.status-banner.warn {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid var(--warning);
+  color: var(--warning);
+}
+
+.diff-zero { color: var(--success); font-weight: 700; }
+.diff-low { color: var(--warning); font-weight: 700; }
+.diff-high { color: var(--danger); font-weight: 700; }
+
 /* Responsive */
 @media (max-width: 600px) {
   .container { padding: 1rem 0.5rem; }

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planning Poker - Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Estimation Dashboard</h1>
+      <p>Compare your estimates with Jira story points</p>
+    </header>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <a href="/">&larr; Home</a>
+    </div>
+
+    <div id="jira-status"></div>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" data-view="room">Per Room</button>
+      <button class="tab-btn" data-view="sprint">Per Sprint</button>
+    </div>
+
+    <!-- Per Room View -->
+    <div id="room-view">
+      <div class="panel">
+        <h2>Load Room Estimations</h2>
+        <label for="room-id-input">Room Code</label>
+        <div style="display:flex;gap:0.5rem;">
+          <input type="text" id="room-id-input" placeholder="e.g. a1b2c3d4" style="margin-bottom:0;">
+          <button class="btn btn-primary" id="load-room-btn">Load</button>
+        </div>
+      </div>
+      <div id="room-stats"></div>
+      <div id="room-table"></div>
+    </div>
+
+    <!-- Per Sprint View -->
+    <div id="sprint-view" class="hidden">
+      <div class="panel">
+        <h2>Load Sprint Estimations</h2>
+        <label for="board-select">Board</label>
+        <select id="board-select"><option value="">Loading boards...</option></select>
+        <label for="sprint-select">Sprint</label>
+        <select id="sprint-select" disabled><option value="">Select a board first</option></select>
+        <button class="btn btn-primary" id="load-sprint-btn" disabled>Load Sprint</button>
+      </div>
+      <div id="sprint-stats"></div>
+      <div id="sprint-table"></div>
+    </div>
+  </div>
+
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>
