@@ -1,0 +1,28 @@
+const express = require('express');
+const http = require('http');
+const path = require('path');
+const { getDb } = require('./src/db');
+const { setupWebSocket } = require('./src/ws/handler');
+const roomsRouter = require('./src/routes/rooms');
+const historyRouter = require('./src/routes/history');
+
+const PORT = process.env.PORT || 3000;
+
+const app = express();
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/api/rooms', roomsRouter);
+app.use('/api/rooms', historyRouter);
+
+const server = http.createServer(app);
+
+// Initialize DB
+getDb();
+
+// Attach WebSocket
+setupWebSocket(server);
+
+server.listen(PORT, () => {
+  console.log(`Planning Poker running on http://localhost:${PORT}`);
+});

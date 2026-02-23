@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planning Poker - History</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1 id="room-title">Estimation History</h1>
+      <p><a href="#" id="room-link">&larr; Back to room</a></p>
+    </header>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <a href="/">Home</a>
+      <a href="#" id="export-btn" class="btn btn-primary btn-sm">Export CSV</a>
+    </div>
+
+    <div id="history-content">
+      <p style="color:var(--text-muted);">Loading...</p>
+    </div>
+  </div>
+
+  <script src="/js/history.js"></script>
+</body>
+</html>

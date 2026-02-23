@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planning Poker</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Planning Poker</h1>
+      <p>Estimate together, wherever you are</p>
+    </header>
+
+    <div class="panel">
+      <h2>Create a Room</h2>
+      <label for="room-name">Room Name</label>
+      <input type="text" id="room-name" placeholder="Sprint 42 Planning">
+
+      <label for="scale-type">Estimation Scale</label>
+      <select id="scale-type">
+        <option value="fibonacci">Fibonacci (0, 1, 2, 3, 5, 8, 13, 21, 34)</option>
+        <option value="tshirt">T-Shirt (XS, S, M, L, XL, XXL)</option>
+        <option value="powers">Powers of 2 (0, 1, 2, 4, 8, 16, 32, 64)</option>
+        <option value="custom">Custom</option>
+      </select>
+
+      <div id="custom-scale-wrap" class="hidden">
+        <label for="custom-scale">Custom Values (comma-separated)</label>
+        <input type="text" id="custom-scale" placeholder="1, 2, 3, 5, 8, 13">
+      </div>
+
+      <button class="btn btn-primary" id="create-btn">Create Room</button>
+    </div>
+
+    <div class="panel">
+      <h2>Join a Room</h2>
+      <label for="room-code">Room Code</label>
+      <input type="text" id="room-code" placeholder="e.g. a1b2c3d4">
+      <button class="btn btn-primary" id="join-btn">Join</button>
+    </div>
+  </div>
+
+  <script src="/js/index.js"></script>
+</body>
+</html>

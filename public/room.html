@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planning Poker - Room</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Name prompt overlay -->
+    <div id="name-prompt" class="panel" style="max-width:400px;margin:4rem auto;">
+      <h2>Enter Your Name</h2>
+      <input type="text" id="display-name" placeholder="Your display name" autofocus>
+      <button class="btn btn-primary" id="join-room-btn">Join Room</button>
+    </div>
+
+    <!-- Main room UI (hidden until joined) -->
+    <div id="room-ui" class="hidden">
+      <!-- Status bar -->
+      <div class="status-bar">
+        <div>
+          <span class="room-name" id="room-name-display"></span>
+          <span style="color:var(--text-muted);font-size:0.85rem" id="room-code-display"></span>
+        </div>
+        <div>
+          <a href="#" id="copy-link" style="font-size:0.85rem">Copy invite link</a>
+          <span style="margin:0 0.5rem;color:var(--border)">|</span>
+          <a href="#" id="history-link" style="font-size:0.85rem">History</a>
+        </div>
+      </div>
+
+      <!-- Participants -->
+      <div class="panel">
+        <h2>Participants</h2>
+        <div class="participant-list" id="participants"></div>
+      </div>
+
+      <!-- Host: Start voting -->
+      <div class="panel host-only hidden" id="start-panel">
+        <h2>Start Voting</h2>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+          <div style="flex:1;min-width:120px;">
+            <label for="jira-key">Jira Key</label>
+            <input type="text" id="jira-key" placeholder="PROJ-123">
+          </div>
+          <div style="flex:2;min-width:200px;">
+            <label for="jira-title">Title</label>
+            <input type="text" id="jira-title" placeholder="Implement user login">
+          </div>
+        </div>
+        <label for="jira-url">URL (optional)</label>
+        <input type="text" id="jira-url" placeholder="https://jira.example.com/browse/PROJ-123">
+        <button class="btn btn-primary" id="start-voting-btn">Start Voting</button>
+      </div>
+
+      <!-- Current estimation -->
+      <div class="panel hidden" id="estimation-panel">
+        <div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:0.5rem;">
+          <div>
+            <h2 id="est-title"></h2>
+            <a href="#" id="est-link" target="_blank" style="font-size:0.85rem"></a>
+          </div>
+          <div class="host-controls host-only hidden" id="host-controls">
+            <button class="btn btn-primary btn-sm" id="reveal-btn">Reveal Votes</button>
+            <button class="btn btn-warning btn-sm hidden" id="revote-btn">Re-vote</button>
+            <button class="btn btn-success btn-sm hidden" id="accept-btn">Accept</button>
+          </div>
+        </div>
+
+        <!-- Vote progress -->
+        <div id="vote-progress" class="vote-progress hidden">
+          <div class="vote-progress-text"><span id="vote-count">0</span> / <span id="vote-total">0</span> voted</div>
+          <div class="vote-progress-bar"><div class="vote-progress-fill" id="vote-progress-fill"></div></div>
+        </div>
+
+        <!-- Voting cards -->
+        <div id="voting-area">
+          <div class="card-grid" id="card-grid"></div>
+        </div>
+
+        <!-- Results (after reveal) -->
+        <div id="results-area" class="hidden">
+          <div class="vote-results" id="vote-results"></div>
+          <div class="stats" id="stats"></div>
+          <!-- Accept with custom value -->
+          <div class="host-only hidden" id="accept-controls" style="text-align:center;margin-top:1rem;">
+            <label for="final-estimate" style="display:inline;margin-right:0.5rem;">Final estimate:</label>
+            <input type="text" id="final-estimate" style="width:80px;display:inline-block;margin-bottom:0;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/room.js"></script>
+</body>
+</html>
