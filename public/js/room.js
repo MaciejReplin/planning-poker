@@ -20,9 +20,12 @@ function toast(msg, isError) {
   setTimeout(() => el.remove(), 3000);
 }
 
-// Restore saved name
+// Restore saved name and auto-join if available
 const savedName = localStorage.getItem('poker_display_name');
-if (savedName) $('#display-name').value = savedName;
+if (savedName) {
+  $('#display-name').value = savedName;
+  joinRoom();
+}
 
 // Join
 $('#join-room-btn').addEventListener('click', joinRoom);
@@ -47,7 +50,12 @@ function joinRoom() {
   };
 
   ws.onclose = () => {
-    toast('Disconnected from room', true);
+    if ($('#room-ui').classList.contains('hidden')) {
+      // Never connected — show name prompt again
+      $('#name-prompt').classList.remove('hidden');
+    } else {
+      toast('Disconnected from room', true);
+    }
   };
 }
 
@@ -86,6 +94,13 @@ function onRoomState(msg) {
   $('#room-code-display').textContent = ` (${msg.room.id})`;
   $('#history-link').href = `/history.html?id=${roomId}`;
   $('#leaderboard-link').href = `/leaderboard.html?id=${roomId}`;
+
+  // Save to recent rooms
+  try {
+    let rooms = JSON.parse(localStorage.getItem('poker_recent_rooms') || '[]').filter(r => r.id !== roomId);
+    rooms.unshift({ id: roomId, name: msg.room.name, ts: Date.now() });
+    localStorage.setItem('poker_recent_rooms', JSON.stringify(rooms.slice(0, 10)));
+  } catch {}
   renderParticipants(msg.participants);
   updateHostUI();
 
