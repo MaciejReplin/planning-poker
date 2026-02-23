@@ -9,9 +9,13 @@ function escapeHtml(str) {
 
 // Pre-fill room from URL
 const params = new URLSearchParams(window.location.search);
-if (params.get('id')) {
-  $('#room-id-input').value = params.get('id');
+const roomId = params.get('id');
+if (roomId) {
+  $('#room-id-input').value = roomId;
+  $('#back-link').href = `/room.html?id=${roomId}`;
   loadLeaderboard();
+} else {
+  $('#back-link').href = '/';
 }
 
 $('#load-btn').addEventListener('click', loadLeaderboard);

@@ -14,8 +14,12 @@
     </header>
 
     <div style="margin-bottom:1rem;">
-      <a href="/">&larr; Home</a>
+      <a href="/" id="back-link">&larr; Home</a>
     </div>
+    <script>
+      const rid = new URLSearchParams(window.location.search).get('id');
+      if (rid) { document.getElementById('back-link').href = `/room.html?id=${rid}`; document.getElementById('back-link').textContent = '\u2190 Back to room'; }
+    </script>
 
     <div class="panel">
       <h2>Load Room Comparison</h2>
