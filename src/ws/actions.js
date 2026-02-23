@@ -124,12 +124,13 @@ function handleAccept(room, name, payload) {
   }
 
   const finalEstimate = payload.finalEstimate || null;
+  const jiraSp = payload.jiraSp || null;
   room.currentEstimation.status = 'accepted';
   room.currentEstimation.finalEstimate = finalEstimate;
 
   const db = getDb();
-  db.prepare('UPDATE estimations SET status = ?, final_estimate = ? WHERE id = ?')
-    .run('accepted', finalEstimate, room.currentEstimation.id);
+  db.prepare('UPDATE estimations SET status = ?, final_estimate = ?, jira_sp = ? WHERE id = ?')
+    .run('accepted', finalEstimate, jiraSp, room.currentEstimation.id);
 
   broadcast(room, {
     type: 'estimate_accepted',

@@ -15,6 +15,9 @@ function getDb() {
     db.pragma('foreign_keys = ON');
     const schema = fs.readFileSync(SCHEMA_PATH, 'utf8');
     db.exec(schema);
+
+    // Migrations
+    try { db.exec('ALTER TABLE estimations ADD COLUMN jira_sp TEXT'); } catch {}
   }
   return db;
 }

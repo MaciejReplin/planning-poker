@@ -306,7 +306,7 @@ $('#start-voting-btn').addEventListener('click', () => {
 $('#reveal-btn').addEventListener('click', () => send({ type: 'reveal' }));
 $('#revote-btn').addEventListener('click', () => send({ type: 'revote' }));
 $('#accept-btn').addEventListener('click', () => {
-  send({ type: 'accept', finalEstimate: $('#final-estimate').value.trim() });
+  send({ type: 'accept', finalEstimate: $('#final-estimate').value.trim(), jiraSp: $('#jira-sp').value.trim() });
 });
 
 $('#copy-link').addEventListener('click', (e) => {

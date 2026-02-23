@@ -15,7 +15,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/rooms', roomsRouter);
 app.use('/api/rooms', historyRouter);
-app.use('/api/jira', jiraRouter);
+app.use('/api/compare', jiraRouter);
 
 const server = http.createServer(app);
 

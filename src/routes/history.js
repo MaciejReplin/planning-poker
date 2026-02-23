@@ -52,11 +52,11 @@ router.get('/:id/history/export', (req, res) => {
     return s;
   };
 
-  const header = ['Jira Key', 'Title', 'URL', 'Final Estimate', 'Date', ...participants].map(csvEscape).join(',');
+  const header = ['Jira Key', 'Title', 'URL', 'Final Estimate', 'Jira SP', 'Date', ...participants].map(csvEscape).join(',');
   const rows = estimationData.map(e => {
     const voteMap = Object.fromEntries(e.votes.map(v => [v.participant, v.value]));
     const cols = [
-      e.jira_key, e.title, e.jira_url, e.final_estimate, e.created_at,
+      e.jira_key, e.title, e.jira_url, e.final_estimate, e.jira_sp, e.created_at,
       ...participants.map(p => voteMap[p] || ''),
     ];
     return cols.map(csvEscape).join(',');
