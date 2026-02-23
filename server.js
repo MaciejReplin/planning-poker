@@ -23,6 +23,7 @@ getDb();
 // Attach WebSocket
 setupWebSocket(server);
 
-server.listen(PORT, () => {
-  console.log(`Planning Poker running on http://localhost:${PORT}`);
+const HOST = process.env.HOST || '::';
+server.listen(PORT, HOST, () => {
+  console.log(`Planning Poker running on port ${PORT}`);
 });
