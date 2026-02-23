@@ -20,6 +20,10 @@ function toast(msg, isError) {
   setTimeout(() => el.remove(), 3000);
 }
 
+// Restore saved name
+const savedName = localStorage.getItem('poker_display_name');
+if (savedName) $('#display-name').value = savedName;
+
 // Join
 $('#join-room-btn').addEventListener('click', joinRoom);
 $('#display-name').addEventListener('keydown', (e) => { if (e.key === 'Enter') joinRoom(); });
@@ -27,6 +31,7 @@ $('#display-name').addEventListener('keydown', (e) => { if (e.key === 'Enter') j
 function joinRoom() {
   myName = $('#display-name').value.trim();
   if (!myName) return alert('Enter a name');
+  localStorage.setItem('poker_display_name', myName);
 
   const proto = location.protocol === 'https:' ? 'wss' : 'ws';
   ws = new WebSocket(`${proto}://${location.host}?room=${roomId}&name=${encodeURIComponent(myName)}`);
