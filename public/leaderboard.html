@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planning Poker - Leaderboard</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Estimation Leaderboard</h1>
+      <p>Who nails the estimates?</p>
+    </header>
+
+    <div style="margin-bottom:1rem;">
+      <a href="/">&larr; Home</a>
+    </div>
+
+    <div class="panel">
+      <label for="room-id-input">Room Code</label>
+      <div style="display:flex;gap:0.5rem;">
+        <input type="text" id="room-id-input" placeholder="e.g. a1b2c3d4" style="margin-bottom:0;">
+        <button class="btn btn-primary" id="load-btn">Load</button>
+      </div>
+    </div>
+
+    <div id="podium"></div>
+    <div id="leaderboard-content"></div>
+  </div>
+
+  <script src="/js/leaderboard.js"></script>
+</body>
+</html>

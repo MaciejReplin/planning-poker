@@ -85,6 +85,7 @@ function onRoomState(msg) {
   $('#room-name-display').textContent = msg.room.name;
   $('#room-code-display').textContent = ` (${msg.room.id})`;
   $('#history-link').href = `/history.html?id=${roomId}`;
+  $('#leaderboard-link').href = `/leaderboard.html?id=${roomId}`;
   renderParticipants(msg.participants);
   updateHostUI();
 

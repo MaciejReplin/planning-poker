@@ -414,6 +414,54 @@ th {
 .diff-low { color: var(--warning); font-weight: 700; }
 .diff-high { color: var(--danger); font-weight: 700; }
 
+/* Podium */
+.podium {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.podium-item {
+  text-align: center;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 2px solid var(--border);
+  min-width: 120px;
+}
+
+.podium-gold { border-color: #fbbf24; }
+.podium-silver { border-color: #9ca3af; }
+.podium-bronze { border-color: #d97706; }
+
+.podium-rank {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.podium-gold .podium-rank { color: #fbbf24; }
+.podium-silver .podium-rank { color: #9ca3af; }
+.podium-bronze .podium-rank { color: #d97706; }
+
+.podium-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.podium-stat {
+  color: var(--success);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.podium-detail {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   .container { padding: 1rem 0.5rem; }
