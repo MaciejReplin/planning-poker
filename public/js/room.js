@@ -25,6 +25,8 @@ const savedName = localStorage.getItem('poker_display_name');
 if (savedName) {
   $('#display-name').value = savedName;
   joinRoom();
+} else {
+  $('#name-prompt').classList.remove('hidden');
 }
 
 // Join
@@ -39,9 +41,13 @@ function joinRoom() {
   const proto = location.protocol === 'https:' ? 'wss' : 'ws';
   ws = new WebSocket(`${proto}://${location.host}?room=${roomId}&name=${encodeURIComponent(myName)}`);
 
+  let heartbeat;
   ws.onopen = () => {
     $('#name-prompt').classList.add('hidden');
     $('#room-ui').classList.remove('hidden');
+    heartbeat = setInterval(() => {
+      if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'ping' }));
+    }, 30000);
   };
 
   ws.onmessage = (e) => {
@@ -50,6 +56,7 @@ function joinRoom() {
   };
 
   ws.onclose = () => {
+    clearInterval(heartbeat);
     if ($('#room-ui').classList.contains('hidden')) {
       // Never connected — show name prompt again
       $('#name-prompt').classList.remove('hidden');

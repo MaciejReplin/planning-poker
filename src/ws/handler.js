@@ -64,6 +64,7 @@ function setupWebSocket(server) {
       try { msg = JSON.parse(raw); } catch { return; }
 
       switch (msg.type) {
+        case 'ping':         ws.send(JSON.stringify({ type: 'pong' })); break;
         case 'start_voting': actions.handleStartVoting(room, name, msg); break;
         case 'vote':         actions.handleVote(room, name, msg); break;
         case 'reveal':       actions.handleReveal(room, name); break;
