@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planning Poker - Wheel of Fortune</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .wheel-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+    @media (max-width: 640px) {
+      .wheel-layout { grid-template-columns: 1fr; }
+    }
+    .wheel-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+    .wheel-pointer {
+      width: 0;
+      height: 0;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-top: 30px solid var(--warning);
+      margin-bottom: -8px;
+      z-index: 1;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    }
+    canvas#wheel {
+      display: block;
+      border-radius: 50%;
+      max-width: 100%;
+    }
+    .winner-box {
+      background: var(--surface2);
+      border: 2px solid var(--success);
+      border-radius: var(--radius);
+      padding: 1rem 1.5rem;
+      text-align: center;
+      width: 100%;
+      animation: pop-in 0.3s ease;
+    }
+    @keyframes pop-in {
+      from { transform: scale(0.85); opacity: 0; }
+      to   { transform: scale(1);    opacity: 1; }
+    }
+    .winner-label {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 0.25rem;
+    }
+    .winner-name {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--success);
+    }
+    .names-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-top: 0.75rem;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .names-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface2);
+      border-radius: var(--radius);
+      padding: 0.4rem 0.75rem;
+      font-size: 0.9rem;
+    }
+    .name-color-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .name-text {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .names-empty {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 0.75rem 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Wheel of Fortune</h1>
+      <p>Spin to pick a lucky winner</p>
+    </header>
+
+    <div style="margin-bottom:1rem;">
+      <a href="/">&larr; Home</a>
+    </div>
+
+    <div class="wheel-layout">
+      <!-- Left: Name management -->
+      <div class="panel">
+        <h2>Participants</h2>
+        <div style="display:flex;gap:0.5rem;">
+          <input type="text" id="name-input" placeholder="Enter name..." style="margin-bottom:0;" maxlength="30">
+          <button class="btn btn-primary btn-sm" id="add-btn">Add</button>
+        </div>
+        <ul class="names-list" id="names-list"></ul>
+        <div style="margin-top:1rem;">
+          <button class="btn btn-danger btn-sm" id="clear-btn">Clear All</button>
+        </div>
+      </div>
+
+      <!-- Right: Wheel -->
+      <div class="panel">
+        <div class="wheel-wrap">
+          <div class="wheel-pointer"></div>
+          <canvas id="wheel" width="420" height="420"></canvas>
+          <button class="btn btn-primary" id="spin-btn" style="width:100%;font-size:1.1rem;padding:0.75rem 0;" disabled>
+            Spin!
+          </button>
+          <div class="winner-box" id="winner-box" style="display:none;">
+            <div class="winner-label">Winner</div>
+            <div class="winner-name" id="winner-name"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/wheel.js"></script>
+</body>
+</html>
