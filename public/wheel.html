@@ -104,8 +104,14 @@
       <p>Spin to pick a lucky winner</p>
     </header>
 
-    <div style="margin-bottom:1rem;">
-      <a href="/">&larr; Home</a>
+    <div style="margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
+      <a href="/" id="back-link">&larr; Home</a>
+    </div>
+
+    <!-- Room info bar (visible only in room mode) -->
+    <div id="room-info" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:0.6rem 1rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+      <span style="font-size:0.9rem;color:var(--text-muted);">Room: <strong id="room-code-display" style="color:var(--text);font-family:monospace;"></strong></span>
+      <button class="btn btn-primary btn-sm" id="sync-btn">Sync participants</button>
     </div>
 
     <div class="wheel-layout">
@@ -117,8 +123,12 @@
           <button class="btn btn-primary btn-sm" id="add-btn">Add</button>
         </div>
         <ul class="names-list" id="names-list"></ul>
-        <div style="margin-top:1rem;">
+        <div style="margin-top:1rem;display:flex;gap:0.5rem;align-items:center;">
           <button class="btn btn-danger btn-sm" id="clear-btn">Clear All</button>
+        </div>
+        <div id="last-winner-section" style="display:none;margin-top:0.75rem;padding:0.5rem 0.75rem;background:var(--surface2);border-radius:var(--radius);border-left:3px solid var(--warning);font-size:0.85rem;">
+          <span style="color:var(--text-muted);">Last winner: </span>
+          <strong id="last-winner-name" style="color:var(--warning);"></strong>
         </div>
       </div>
 

@@ -29,6 +29,14 @@ router.post('/', (req, res) => {
   res.status(201).json({ id, name: name.trim(), scale, scaleType: type });
 });
 
+// Get live participants for a room (from in-memory state)
+router.get('/:id/participants', (req, res) => {
+  const { getRoom } = require('../ws/roomState');
+  const room = getRoom(req.params.id);
+  if (!room) return res.json({ participants: [] });
+  res.json({ participants: [...room.participants.keys()] });
+});
+
 // Get room
 router.get('/:id', (req, res) => {
   const db = getDb();

@@ -101,6 +101,7 @@ function onRoomState(msg) {
   $('#room-code-display').textContent = ` (${msg.room.id})`;
   $('#history-link').href = `/history.html?id=${roomId}`;
   $('#leaderboard-link').href = `/leaderboard.html?id=${roomId}`;
+  $('#wheel-link').href = `/wheel.html?id=${roomId}`;
 
   // Save to recent rooms
   try {

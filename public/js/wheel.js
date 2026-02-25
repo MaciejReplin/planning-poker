@@ -20,18 +20,72 @@
   const spinBtn = document.getElementById('spin-btn');
   const winnerBox = document.getElementById('winner-box');
   const winnerNameEl = document.getElementById('winner-name');
+  const roomInfoEl = document.getElementById('room-info');
+  const roomCodeEl = document.getElementById('room-code-display');
+  const syncBtn = document.getElementById('sync-btn');
+  const lastWinnerSection = document.getElementById('last-winner-section');
+  const lastWinnerNameEl = document.getElementById('last-winner-name');
+  const backLink = document.getElementById('back-link');
+
+  // Room mode: ?id=ROOM_ID
+  const params = new URLSearchParams(location.search);
+  const roomId = params.get('id');
+  const winnerKey = roomId ? `wheel-winner-${roomId}` : 'wheel-winner-manual';
+  const namesKey = roomId ? null : 'wheel-names'; // don't persist names in room mode
 
   let names = [];
   let currentAngle = 0;
   let spinning = false;
 
-  try {
-    const saved = localStorage.getItem('wheel-names');
-    if (saved) names = JSON.parse(saved);
-  } catch (e) {}
+  // Set up room mode UI
+  if (roomId) {
+    roomInfoEl.style.display = 'flex';
+    roomCodeEl.textContent = roomId;
+    backLink.href = `/room.html?id=${roomId}`;
+    backLink.textContent = '\u2190 Back to room';
+    syncBtn.addEventListener('click', () => fetchRoomParticipants(true));
+    fetchRoomParticipants(false);
+  } else {
+    // Manual mode: load persisted names
+    try {
+      const saved = localStorage.getItem('wheel-names');
+      if (saved) names = JSON.parse(saved);
+    } catch (e) {}
+  }
 
-  function save() {
-    localStorage.setItem('wheel-names', JSON.stringify(names));
+  // Load and display last winner
+  const savedWinner = localStorage.getItem(winnerKey);
+  if (savedWinner) showLastWinner(savedWinner);
+
+  async function fetchRoomParticipants(showFeedback) {
+    if (showFeedback) {
+      syncBtn.disabled = true;
+      syncBtn.textContent = 'Syncing…';
+    }
+    try {
+      const res = await fetch(`/api/rooms/${roomId}/participants`);
+      const data = await res.json();
+      if (data.participants && data.participants.length > 0) {
+        names = data.participants;
+        renderNamesList();
+        drawWheel(currentAngle);
+        updateSpinBtn();
+        winnerBox.style.display = 'none';
+      } else if (showFeedback) {
+        alert('No participants found in room. Make sure someone has joined.');
+      }
+    } catch (e) {
+      if (showFeedback) alert('Failed to fetch room participants.');
+    } finally {
+      if (showFeedback) {
+        syncBtn.disabled = false;
+        syncBtn.textContent = 'Sync participants';
+      }
+    }
+  }
+
+  function saveNames() {
+    if (namesKey) localStorage.setItem(namesKey, JSON.stringify(names));
   }
 
   function escHtml(s) {
@@ -41,7 +95,11 @@
   function renderNamesList() {
     namesList.innerHTML = '';
     if (names.length === 0) {
-      namesList.innerHTML = '<li class="names-empty" style="list-style:none;">No names yet — add some above</li>';
+      const li = document.createElement('li');
+      li.className = 'names-empty';
+      li.style.listStyle = 'none';
+      li.textContent = roomId ? 'Click "Sync participants" to load the room' : 'No names yet — add some above';
+      namesList.appendChild(li);
     } else {
       names.forEach((name, i) => {
         const li = document.createElement('li');
@@ -51,7 +109,7 @@
           `<button class="btn btn-danger btn-sm" data-i="${i}">&times;</button>`;
         li.querySelector('button').addEventListener('click', () => {
           names.splice(i, 1);
-          save();
+          saveNames();
           renderNamesList();
           drawWheel(currentAngle);
           updateSpinBtn();
@@ -65,6 +123,11 @@
 
   function updateSpinBtn() {
     spinBtn.disabled = names.length < 2 || spinning;
+  }
+
+  function showLastWinner(name) {
+    lastWinnerNameEl.textContent = name;
+    lastWinnerSection.style.display = 'block';
   }
 
   function drawWheel(angle) {
@@ -83,7 +146,7 @@
       ctx.font = '15px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('Add names to spin', cx, cy);
+      ctx.fillText(roomId ? 'Sync participants to spin' : 'Add names to spin', cx, cy);
       return;
     }
 
@@ -94,7 +157,6 @@
       const endA = startA + segAngle;
       const midA = startA + segAngle / 2;
 
-      // Segment
       ctx.beginPath();
       ctx.moveTo(cx, cy);
       ctx.arc(cx, cy, R, startA, endA);
@@ -105,7 +167,6 @@
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      // Text
       const fontSize = Math.max(9, Math.min(14, Math.round(segAngle * R * 0.38)));
       ctx.save();
       ctx.translate(cx, cy);
@@ -138,7 +199,6 @@
 
   function getWinnerIndex(angle, n) {
     const segAngle = (2 * Math.PI) / n;
-    // Pointer is at top = -PI/2; find which segment sits there
     let a = ((-Math.PI / 2 - angle) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
     return Math.floor(a / segAngle) % n;
   }
@@ -149,7 +209,6 @@
     spinBtn.disabled = true;
     winnerBox.style.display = 'none';
 
-    // 6–12 full rotations + random extra angle
     const totalSpin = Math.PI * 2 * (6 + Math.random() * 6) + Math.random() * Math.PI * 2;
     const startAngle = currentAngle;
     const duration = 4000 + Math.random() * 2000;
@@ -158,7 +217,7 @@
     function frame(now) {
       const elapsed = now - startTime;
       const t = Math.min(elapsed / duration, 1);
-      const ease = 1 - Math.pow(1 - t, 4); // quartic ease-out
+      const ease = 1 - Math.pow(1 - t, 4);
       currentAngle = startAngle + totalSpin * ease;
       drawWheel(currentAngle);
 
@@ -168,8 +227,10 @@
         currentAngle = startAngle + totalSpin;
         drawWheel(currentAngle);
         spinning = false;
-        const winnerIdx = getWinnerIndex(currentAngle, names.length);
-        showWinner(names[winnerIdx]);
+        const winner = names[getWinnerIndex(currentAngle, names.length)];
+        localStorage.setItem(winnerKey, winner);
+        showWinner(winner);
+        showLastWinner(winner);
         updateSpinBtn();
       }
     }
@@ -179,10 +240,8 @@
 
   function showWinner(name) {
     winnerNameEl.textContent = name;
-    // Re-trigger animation
     winnerBox.style.display = 'none';
-    // Force reflow so animation replays
-    void winnerBox.offsetWidth;
+    void winnerBox.offsetWidth; // replay animation
     winnerBox.style.display = 'block';
     winnerBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
@@ -193,7 +252,7 @@
     names.push(name);
     nameInput.value = '';
     nameInput.focus();
-    save();
+    saveNames();
     renderNamesList();
     drawWheel(currentAngle);
     updateSpinBtn();
@@ -207,7 +266,7 @@
     if (names.length === 0) return;
     if (!confirm('Clear all names?')) return;
     names = [];
-    save();
+    saveNames();
     renderNamesList();
     drawWheel(currentAngle);
     winnerBox.style.display = 'none';
@@ -216,7 +275,6 @@
 
   spinBtn.addEventListener('click', spin);
 
-  // Scale canvas visually on small screens without changing its internal resolution
   function resizeCanvas() {
     const panel = canvas.parentElement;
     const maxW = Math.min(420, panel.offsetWidth - 32);
