@@ -37,9 +37,12 @@ function setupWebSocket(server) {
       return;
     }
 
+    // Mutable name ref so rename can update it for close/message handlers
+    const ctx = { name };
+
     // Add participant
-    room.participants.set(name, ws);
-    if (!room.host) room.host = name;
+    room.participants.set(ctx.name, ws);
+    if (!room.host) room.host = ctx.name;
 
     // Send full state to new joiner
     const { getScale } = require('../scales');
@@ -54,7 +57,7 @@ function setupWebSocket(server) {
     // Notify others
     actions.broadcast(room, {
       type: 'participant_joined',
-      participant: name,
+      participant: ctx.name,
       participants: getRoomState(room).participants,
     });
 
@@ -62,23 +65,27 @@ function setupWebSocket(server) {
     ws.on('message', (raw) => {
       let msg;
       try { msg = JSON.parse(raw); } catch { return; }
+      const n = ctx.name;
 
       switch (msg.type) {
-        case 'ping':         ws.send(JSON.stringify({ type: 'pong' })); break;
-        case 'start_voting': actions.handleStartVoting(room, name, msg); break;
-        case 'vote':         actions.handleVote(room, name, msg); break;
-        case 'reveal':       actions.handleReveal(room, name); break;
-        case 'accept':       actions.handleAccept(room, name, msg); break;
-        case 'revote':       actions.handleRevote(room, name); break;
-        case 'kick':         actions.handleKick(room, name, msg); break;
-        case 'change_scale': actions.handleChangeScale(room, name, msg); break;
+        case 'ping':          ws.send(JSON.stringify({ type: 'pong' })); break;
+        case 'start_voting':  actions.handleStartVoting(room, n, msg); break;
+        case 'vote':          actions.handleVote(room, n, msg); break;
+        case 'reveal':        actions.handleReveal(room, n); break;
+        case 'accept':        actions.handleAccept(room, n, msg); break;
+        case 'revote':        actions.handleRevote(room, n); break;
+        case 'kick':          actions.handleKick(room, n, msg); break;
+        case 'transfer_host': actions.handleTransferHost(room, n, msg); break;
+        case 'change_scale':  actions.handleChangeScale(room, n, msg); break;
+        case 'rename':        actions.handleRename(room, ctx, msg); break;
       }
     });
 
     // Handle disconnect
     ws.on('close', () => {
-      room.participants.delete(name);
-      room.votes.delete(name);
+      const n = ctx.name;
+      room.participants.delete(n);
+      room.votes.delete(n);
 
       if (room.participants.size === 0) {
         removeRoom(roomId);
@@ -86,7 +93,7 @@ function setupWebSocket(server) {
       }
 
       // Promote new host if host left
-      if (room.host === name) {
+      if (room.host === n) {
         room.host = room.participants.keys().next().value;
         actions.broadcast(room, {
           type: 'host_changed',
@@ -96,7 +103,7 @@ function setupWebSocket(server) {
 
       actions.broadcast(room, {
         type: 'participant_left',
-        participant: name,
+        participant: n,
         participants: getRoomState(room).participants,
       });
     });

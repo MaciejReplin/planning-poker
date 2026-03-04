@@ -172,6 +172,45 @@ function handleKick(room, name, payload) {
   }
 }
 
+function handleRename(room, ctx, payload) {
+  const oldName = ctx.name;
+  const newName = (payload.newName || '').trim();
+  if (!newName) return sendError(room.participants.get(oldName), 'Name cannot be empty');
+  if (newName === oldName) return;
+  if (room.participants.has(newName)) return sendError(room.participants.get(oldName), 'Name already taken');
+
+  const ws = room.participants.get(oldName);
+  room.participants.delete(oldName);
+  room.participants.set(newName, ws);
+
+  if (room.votes.has(oldName)) {
+    room.votes.set(newName, room.votes.get(oldName));
+    room.votes.delete(oldName);
+  }
+
+  if (room.host === oldName) room.host = newName;
+
+  ctx.name = newName;
+
+  broadcast(room, {
+    type: 'participant_renamed',
+    oldName,
+    newName,
+    host: room.host,
+    participants: getRoomState(room).participants,
+  });
+}
+
+function handleTransferHost(room, name, payload) {
+  if (!isHost(room, name)) return sendError(room.participants.get(name), 'Only the host can transfer host');
+  const target = payload.participant;
+  if (!room.participants.has(target)) return sendError(room.participants.get(name), 'Participant not found');
+  if (target === name) return sendError(room.participants.get(name), 'You are already the host');
+
+  room.host = target;
+  broadcast(room, { type: 'host_changed', host: room.host });
+}
+
 function handleChangeScale(room, name, payload) {
   if (!isHost(room, name)) return sendError(room.participants.get(name), 'Only the host can change scale');
 
@@ -200,6 +239,8 @@ module.exports = {
   handleAccept,
   handleRevote,
   handleKick,
+  handleRename,
+  handleTransferHost,
   handleChangeScale,
   broadcast,
   sendTo,

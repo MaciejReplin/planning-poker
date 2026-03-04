@@ -24,6 +24,8 @@
           <span style="color:var(--text-muted);font-size:0.85rem" id="room-code-display"></span>
         </div>
         <div>
+          <a href="/" style="font-size:0.85rem">Home</a>
+          <span style="margin:0 0.5rem;color:var(--border)">|</span>
           <a href="#" id="copy-link" style="font-size:0.85rem">Copy invite link</a>
           <span style="margin:0 0.5rem;color:var(--border)">|</span>
           <a href="#" id="history-link" style="font-size:0.85rem">History</a>
@@ -45,7 +47,7 @@
         <h2>Start Voting</h2>
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
           <div style="flex:1;min-width:120px;">
-            <label for="jira-key">Jira Key</label>
+            <label for="jira-key">Jira Key (optional)</label>
             <input type="text" id="jira-key" placeholder="PROJ-123">
           </div>
           <div style="flex:2;min-width:200px;">
@@ -56,6 +58,28 @@
         <label for="jira-url">URL (optional)</label>
         <input type="text" id="jira-url" placeholder="https://jira.example.com/browse/PROJ-123">
         <button class="btn btn-primary" id="start-voting-btn">Start Voting</button>
+
+        <hr style="margin:1rem 0;border-color:var(--border);">
+        <h3 style="margin:0 0 0.5rem;">Change Estimation Scale</h3>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:flex-end;">
+          <div style="flex:2;min-width:160px;">
+            <label for="scale-type-change">Scale</label>
+            <select id="scale-type-change">
+              <option value="fibonacci">Fibonacci (0, 1, 2, 3, 5, 8, 13, 21, 34)</option>
+              <option value="tshirt">T-Shirt (XS, S, M, L, XL, XXL)</option>
+              <option value="powers">Powers of 2 (0, 1, 2, 4, 8, 16, 32, 64)</option>
+              <option value="mandays">Mandays (1, 2, 3, 4, 5, 6, 7, 8, 9, 10+)</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+          <div style="flex:1;">
+            <button class="btn btn-warning" id="change-scale-btn" style="margin-bottom:0;">Apply Scale</button>
+          </div>
+        </div>
+        <div id="custom-scale-change-wrap" class="hidden" style="margin-top:0.5rem;">
+          <label for="custom-scale-change">Custom Values (comma-separated)</label>
+          <input type="text" id="custom-scale-change" placeholder="1, 2, 3, 5, 8, 13">
+        </div>
       </div>
 
       <!-- Current estimation -->

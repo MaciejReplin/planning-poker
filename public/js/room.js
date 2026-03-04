@@ -6,6 +6,7 @@ let ws;
 let myName = '';
 let isHost = false;
 let currentScale = [];
+let currentScaleType = 'fibonacci';
 let myVote = null;
 
 const $ = (sel) => document.querySelector(sel);
@@ -76,6 +77,7 @@ function handleMessage(msg) {
     case 'room_state': onRoomState(msg); break;
     case 'participant_joined':
     case 'participant_left': renderParticipants(msg.participants); break;
+    case 'participant_renamed': onParticipantRenamed(msg); break;
     case 'host_changed': onHostChanged(msg); break;
     case 'voting_started': onVotingStarted(msg); break;
     case 'vote_cast': onVoteCast(msg); break;
@@ -96,6 +98,7 @@ function handleMessage(msg) {
 
 function onRoomState(msg) {
   currentScale = msg.room.scale;
+  currentScaleType = msg.room.scaleType;
   isHost = msg.host === myName;
   $('#room-name-display').textContent = msg.room.name;
   $('#room-code-display').textContent = ` (${msg.room.id})`;
@@ -120,6 +123,16 @@ function onRoomState(msg) {
       updateVoteProgress(msg.votedNames.length, msg.participants.length);
     }
   }
+}
+
+function onParticipantRenamed(msg) {
+  if (msg.oldName === myName) {
+    myName = msg.newName;
+    localStorage.setItem('poker_display_name', myName);
+  }
+  isHost = msg.host === myName;
+  renderParticipants(msg.participants);
+  toast(`${msg.oldName} is now known as ${msg.newName}`);
 }
 
 function onHostChanged(msg) {
@@ -187,6 +200,7 @@ function onEstimateAccepted(msg) {
 
 function onScaleChanged(msg) {
   currentScale = msg.scale;
+  currentScaleType = msg.scaleType;
   renderCards();
   toast('Scale changed');
 }
@@ -198,7 +212,17 @@ function updateHostUI() {
     el.classList.toggle('hidden', !isHost);
   });
   if (isHost && !$('#estimation-panel').classList.contains('hidden')) return;
-  if (isHost) showStartPanel();
+  if (isHost) {
+    showStartPanel();
+    updateScaleSelector();
+  }
+}
+
+function updateScaleSelector() {
+  const sel = $('#scale-type-change');
+  if (!sel) return;
+  sel.value = currentScaleType || 'fibonacci';
+  $('#custom-scale-change-wrap').classList.toggle('hidden', sel.value !== 'custom');
 }
 
 function showStartPanel() {
@@ -250,11 +274,35 @@ function renderParticipants(list) {
     if (p.hasVoted) html += `<span class="voted-dot"></span>`;
     html += escapeHtml(p.name);
     if (p.isHost) html += ` <span class="host-badge">HOST</span>`;
+    if (p.name === myName) {
+      html += ` <span class="rename-btn" style="cursor:pointer;color:var(--text-muted);font-size:0.8rem;" title="Rename">&#9998;</span>`;
+    }
     if (isHost && p.name !== myName) {
+      html += ` <span class="make-host-btn" data-name="${escapeHtml(p.name)}" style="cursor:pointer;color:var(--text-muted);font-size:0.8rem;" title="Make Host">&#9812;</span>`;
       html += ` <span class="kick-btn" data-name="${escapeHtml(p.name)}" style="cursor:pointer;color:var(--danger);font-size:0.8rem;" title="Kick">&times;</span>`;
     }
     html += `</div>`;
     container.innerHTML += html;
+  });
+
+  // Rename handler
+  const renameBtn = container.querySelector('.rename-btn');
+  if (renameBtn) {
+    renameBtn.addEventListener('click', () => {
+      const newName = prompt('Enter new name:', myName);
+      if (newName && newName.trim() && newName.trim() !== myName) {
+        send({ type: 'rename', newName: newName.trim() });
+      }
+    });
+  }
+
+  // Make host handlers
+  container.querySelectorAll('.make-host-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (confirm(`Make ${btn.dataset.name} the host?`)) {
+        send({ type: 'transfer_host', participant: btn.dataset.name });
+      }
+    });
   });
 
   // Kick handlers
@@ -339,4 +387,18 @@ $('#copy-link').addEventListener('click', (e) => {
     () => toast('Link copied!'),
     () => toast('Failed to copy', true)
   );
+});
+
+$('#scale-type-change').addEventListener('change', () => {
+  $('#custom-scale-change-wrap').classList.toggle('hidden', $('#scale-type-change').value !== 'custom');
+});
+
+$('#change-scale-btn').addEventListener('click', () => {
+  const scaleType = $('#scale-type-change').value;
+  const customScale = $('#custom-scale-change').value.trim();
+  if (scaleType === 'custom' && !customScale) {
+    toast('Enter custom values', true);
+    return;
+  }
+  send({ type: 'change_scale', scaleType, customScale });
 });
